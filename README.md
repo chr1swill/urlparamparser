@@ -20,14 +20,14 @@ If only the definition are needed:
 Currently only works for unquoted parameter value for example:
 ```c
 const unsigned char *url =
-    "https://example.com/login/?search=fastest+car+in+the+world"
+    "https://example.com/search/?q=fastest+car+in+the+world"
 ```
 
 Will be into a struct perfectly fine but:
 
 ```c
 const unsigned char *url =
-    "https://example.com/login/?search=\"fastest+car+in+the+world\""
+    "https://example.com/search/?q=\"fastest+car+in+the+world\""
 // or this
 const unsigned char *url =
     "https://example.com/login/?search='fastest+car+in+the+world'"
