@@ -10,15 +10,8 @@
 
 int main(void)
 {
-  // does to work for quoted values just yet, whomp, whomp
-  // eg:
-  // const unsigned char url[] =
-  //   "http://localhost:8080/login?username=chris&password=password123&water=melon&yourdadis=\"bald!\"";
-  //   or
-  // const unsigned char url[] =
-  //   "http://localhost:8080/login?username=chris&password=password123&water=melon&yourdadis='bald!'";
   const unsigned char url[] =
-    "http://localhost:8080/login?username=chris&password=password123&water=melon&yourdadis=bald";
+    "http://localhost:8080/search/?q=what+a+do+baby";
   size_t i, n_query_params, urllen = (sizeof url) - 1; // those good only invisible '\0', classic
   struct url_query_param query_params[4] = {0};
   enum url_protocol protocol;
