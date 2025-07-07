@@ -1,29 +1,11 @@
-#include <stdio.h>
-#include <stdint.h>
-#include <string.h>
-#include <assert.h>
-#include <string.h>
-#include <ctype.h>
-#include <unistd.h>
+#ifndef _urlparamparser_h
+#define  _urlparamparser_h
 
 enum url_protocol {
   url_protocol_unknown = 0x0,
   url_protocol_insecure = 0x7, //protocol len
   url_protocol_secure = 0x8, // protocol len
 };
-
-static inline
-enum url_protocol check_protocol(const unsigned char *url, size_t len)
-{
-  assert(len > 8);
-
-  if (memcmp(url, "http://", 7) == 0)
-    return url_protocol_insecure;
-  else if (memcmp(url, "https://", 8) == 0)
-    return url_protocol_secure;
-  else
-    return url_protocol_unknown;
-}
 
 struct url_query_param {
   const unsigned char *key;
@@ -39,15 +21,51 @@ enum url_token {
   url_token_quote = '"',
 };
 
+static inline
+enum url_protocol check_protocol(const unsigned char *url, size_t len);
+
 /**
- * @return -1 in case of error or 0 if all good
+ * @return -1 in case of error or 0 if success 
  */
 static inline
-int consume_query_param(
-    struct url_query_param *query_param,
-    const unsigned char *url,
-    size_t urllen,
-    size_t *idx)
+int consume_query_param(struct url_query_param *query_param,
+    const unsigned char *url, size_t urllen, size_t *idx);
+
+/**
+ * @note THIS FUNCTION DOES NOT ALLOCATE 
+ *
+ * @param url - should be at the index and the start of the domain,
+ *   directly after the protocol
+ * @param urllen - (original len of the url) - (the len of the protocol)
+ * @param query_params - should be 0 initialized
+ * @param n_query_params - the number of filled query params in array
+ * @param query_params_max - the capacity of the query params array
+ *
+ * @return -1 means error 0 means success 
+ */
+static inline
+int parse_query_params(const unsigned char *url, size_t urllen,
+    struct url_query_param query_params[], size_t *n_query_params,
+    const size_t query_params_max);
+
+#ifdef URLPARAMPARSER_IMPLEMENTATION
+
+static inline
+enum url_protocol check_protocol(const unsigned char *url, size_t len)
+{
+  assert(len > 8);
+
+  if (memcmp(url, "http://", 7) == 0)
+    return url_protocol_insecure;
+  else if (memcmp(url, "https://", 8) == 0)
+    return url_protocol_secure;
+  else
+    return url_protocol_unknown;
+}
+
+static inline
+int consume_query_param(struct url_query_param *query_param,
+    const unsigned char *url, size_t urllen, size_t *idx)
 {
   assert(query_param->keylen == 0);
   assert(query_param->valuelen == 0);
@@ -143,18 +161,6 @@ found_end_quote:
   }
 }
 
-/**
- * @note THIS FUNCTION DOES NOT ALLOCATE 
- *
- * @param url - should be at the index and the start of the domain,
- *   directly after the protocol
- * @param urllen - (original len of the url) - (the len of the protocol)
- * @param query_params - should be 0 initialized
- * @param n_query_params - the number of filled query params in array
- * @param query_params_max - the capacity of the query params array
- *
- * @return -1 means error 0 means success 
- */
 static inline
 int parse_query_params(
     const unsigned char *url,
@@ -191,41 +197,6 @@ int parse_query_params(
   return 0;
 }
 
-int main(void)
-{
-  // does to work for quoted values just yet, whomp, whomp
-  // const unsigned char url[] =
-  //   "http://localhost:8080/login?username=chris&password=password123&water=melon&yourdadis=\"bald!\"";
-  const unsigned char url[] =
-    "http://localhost:8080/login?username=chris&password=password123&water=melon&yourdadis=bald";
-  size_t i, n_query_params, urllen = (sizeof url) - 1; // those good only invisible '\0', classic
-  struct url_query_param query_params[4] = {0};
-  enum url_protocol protocol;
-  int rc;
+#endif // URLPARAMPARSER_IMPLEMENTATION
 
-  protocol = check_protocol(url, urllen);
-  n_query_params = 0;
-
-  rc = parse_query_params(
-      &url[protocol],
-      (urllen - protocol),
-      query_params,
-      &n_query_params,
-      sizeof query_params / sizeof query_params[0]);
-
-  // printf("n_query_params=%zu\n", n_query_params);
-
-  i = 0;
-  for ( ; i < n_query_params; ++i)
-  {
-    write(STDOUT_FILENO, query_params[i].key, query_params[i].keylen);
-    putchar('\n');
-    fflush(stdout);
-    write(STDOUT_FILENO, query_params[i].value, query_params[i].valuelen);
-    putchar('\n');
-    putchar('\n');
-    fflush(stdout);
-  }
-
-  return 0;
-}
+#endif // _urlparamparser_h
