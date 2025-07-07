@@ -1,6 +1,19 @@
 # Url Param Parser
 
-Super simple and lightweight http + https url query param parser. Inspired my the picohttpparser library so no function allocate, library users provide the memory which we set pointer to.
+Super simple and lightweight http + https header only url query param parser. Inspired by the [picohttpparser library](https://github.com/h2o/picohttpparser) functions explictly do not allocate any memory on the heap.
+
+## Usage
+
+To have access to the function defintion #include the header as follows:
+```c
+#define URLPARAMPARSER_IMPLEMENTATION
+#include "urlparamparser"
+```
+
+If only the definition are needed:
+```c
+#include "urlparamparser"
+```
 
 ## Notice
 
