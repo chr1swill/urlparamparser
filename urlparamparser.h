@@ -22,7 +22,7 @@ enum url_token {
 };
 
 static inline
-enum url_protocol check_protocol(const unsigned char *url, size_t len);
+void check_protocol(const unsigned char *url, size_t len, enum url_token protocol);
 
 /**
  * @return -1 in case of error or 0 if success 
@@ -51,16 +51,16 @@ int parse_query_params(const unsigned char *url, size_t urllen,
 #ifdef URLPARAMPARSER_IMPLEMENTATION
 
 static inline
-enum url_protocol check_protocol(const unsigned char *url, size_t len)
+void check_protocol(const unsigned char *url, size_t len, enum url_protocol *protocol)
 {
   assert(len > 8);
 
   if (memcmp(url, "http://", 7) == 0)
-    return url_protocol_insecure;
+    *protocol = url_protocol_insecure;
   else if (memcmp(url, "https://", 8) == 0)
-    return url_protocol_secure;
+    *protocol = url_protocol_secure;
   else
-    return url_protocol_unknown;
+    *protocol = url_protocol_unknown;
 }
 
 static inline

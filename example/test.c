@@ -24,9 +24,10 @@ int main(void)
   enum url_protocol protocol;
   int rc;
 
-  protocol = check_protocol(url, urllen);
-  n_query_params = 0;
+  check_protocol(url, urllen, &protocol);
+  assert(protocol != url_protocol_unknown);
 
+  n_query_params = 0;
   rc = parse_query_params(
       &url[protocol],
       (urllen - protocol),
