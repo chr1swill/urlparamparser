@@ -22,7 +22,7 @@ enum url_token {
 };
 
 static inline
-void check_protocol(const unsigned char *url, size_t len, enum url_token protocol);
+void check_protocol(const unsigned char *url, size_t len, enum url_protocol *protocol);
 
 /**
  * @return -1 in case of error or 0 if success 
