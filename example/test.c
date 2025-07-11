@@ -3,7 +3,6 @@
 #include <string.h>
 #include <assert.h>
 #include <string.h>
-#include <ctype.h>
 #include <unistd.h>
 #define URLPARAMPARSER_IMPLEMENTATION
 #include "../urlparamparser.h"
@@ -11,7 +10,7 @@
 int main(void)
 {
   const unsigned char url[] =
-    "http://localhost:8080/search/?q=what+a+do+baby";
+    "http://localhost:8080/search/?q=what+a+do+baby&search=whatisthat&username=yournamepal";
   size_t i, n_query_params, urllen = (sizeof url) - 1; // those good only invisible '\0', classic
   struct url_query_param query_params[4] = {0};
   enum url_protocol protocol;
@@ -27,6 +26,8 @@ int main(void)
       query_params,
       &n_query_params,
       sizeof query_params / sizeof query_params[0]);
+
+  assert(n_query_params == 3);
 
   i = 0;
   for ( ; i < n_query_params; ++i)
