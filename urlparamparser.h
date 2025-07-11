@@ -1,6 +1,8 @@
 #ifndef _urlparamparser_h
 #define  _urlparamparser_h
 
+#include <ctype.h>
+
 enum url_protocol {
   url_protocol_unknown = 0x0,
   url_protocol_insecure = 0x7, //protocol len
@@ -20,6 +22,8 @@ enum url_token {
   url_token_equal = '=',
   url_token_quote = '"',
 };
+
+#ifdef URLPARAMPARSER_IMPLEMENTATION
 
 static inline
 void check_protocol(const unsigned char *url, size_t len, enum url_protocol *protocol);
@@ -57,7 +61,7 @@ int parse_query_params(const unsigned char *url, size_t urllen,
     const size_t query_params_max);
 
 
-#ifdef URLPARAMPARSER_IMPLEMENTATION
+#else // URLPARAMPARSER_IMPLEMENTATION
 
 static inline
 void check_protocol(const unsigned char *url, size_t len, enum url_protocol *protocol)
